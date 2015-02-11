@@ -1,0 +1,48 @@
+\documentclass[a4paper]{article}
+\usepackage{pdflscape}
+\usepackage{graphicx}
+\usepackage[margin = 1 cm]{geometry}
+
+\begin{document}
+
+Illumina characterizes probes into 6 categories: TSS1500, TSS200, 5' UTR, 1st exon, gene body, and 3' UTR.
+Promoter regions were divided into two, mutually exclusive bins of 200 bp and 1500 bp blocks upstream of the
+transcription start site (designated TSS200 and TSS1500, respectively).
+
+<<sig_genes_in_regions, dev = "pdf", results = 'asis', echo = FALSE, fig.show = 'hold'>>=
+
+	for (r in names(mval.region)){
+		#the rownames of mval.region[[r]] are the gene names for the the first 6 regions
+		#the rownames of the remaining 5 regions correspond chromosomal locations
+		names(regr.region.pv[[r]]) <- rownames(mval.region[[r]])
+		#sort the pvalues after assigning each the corresponding gene/chr location
+		pval.sort <- sort(regr.region.pv[[r]])
+		#extract the 5 lowest pvalues (names of the gene/ chr loc are automatically extracted)
+		pval.sig <- pval.sort[1:5]
+
+		#find the associated Cpg ids for each signif. gene/ chr loc
+		CpG.sig <- vector(mode="list")
+		for (j in 1:5){
+		CpG.sig[[j]] <- get(r)[['SID']][[names(pval.sig)[j]]]
+		}
+		#convert the CpG id's into a vector
+		CpG.sig <- sapply(CpG.sig, paste, collapse =", ")
+		#create a data frame with the significant pvalues, and associated CpG ids
+		#the rownames of the data frame are the corresponding gene/chr location
+		assoc.genes <- data.frame(pval.sig, CpG.sig)
+
+		#output the table of the top 5 significant genes
+		#xtable requires columns of data frame be a column
+		#create the caption for each table by including the behav. measure and gene region
+		r.caption <- substr(r, 1, nchar(r)-3)
+		#behav.caption <- gsub("_", "-", behav.vars[i])
+		capt <- paste(r.caption)
+
+		#output the table
+		tab <- xtable(assoc.genes, digits = -3, caption = capt)
+		print(tab, sanitize.text.function=function(str)gsub("_"," ",str,fixed=TRUE))
+	}
+	cat('\\clearpage\n')
+	cat('\\newpage\n')
+@
+\end{document}
