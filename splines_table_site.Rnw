@@ -1,0 +1,30 @@
+\documentclass[a4paper]{article}
+\usepackage{pdflscape}
+\usepackage{graphicx}
+\usepackage[margin = 1 cm]{geometry}
+
+\begin{document}
+
+Illumina characterizes probes into 6 categories: TSS1500, TSS200, 5' UTR, 1st exon, gene body, and 3' UTR.
+Promoter regions were divided into two, mutually exclusive bins of 200 bp and 1500 bp blocks upstream of the
+transcription start site (designated TSS200 and TSS1500, respectively).
+
+\begin{landscape}
+<<signif_genes, dev = "pdf", results = 'asis', echo = FALSE, sanitize = TRUE, fig.show = 'hold'>>=
+library(xtable)
+
+for (i in 1:length(bhv.vars)){
+    names(regr.site.pv[[i]]) <- rownames(hm450)
+    pval.sort <- sort(regr.site.pv[[i]])
+    pval.sig <- pval.sort[1:5]
+    pval.annot <- hm450[names(pval.sig), c(17, 18, 20, 22)]
+    assoc.genes <- data.frame(pval.sig, pval.annot)
+    behav.caption <- gsub("_", "-", bhv.vars[i])
+	print(xtable(assoc.genes, digits = -3, caption = behav.caption),
+			sanitize.text.function=function(str)gsub("_"," ",str,fixed=TRUE))
+	}
+
+	cat('\\clearpage\n')
+@
+\end{landscape}
+\end{document}
