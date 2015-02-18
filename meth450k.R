@@ -33,7 +33,7 @@ source('~/Projects/R_lib/epigenetics/model_spec_eating.R')
 #initialize the column we will use to store the methylation value one site at a time
 pData$mval <- NA
 
-regr.site.pv <- foreach (y = bhv.vars, .verbose = TRUE, .packages = 'splines') %dopar% {lm.cpgsite(mvalues, reg.vars, y)}
+regr.site.pv <- foreach (y = bhv.vars, .verbose = TRUE, .packages = 'splines') %dopar% {lm.spline(mvalues, reg.vars, y)}
 
 knitr::knit2pdf('~/Projects/R_lib/epigenetics/splines_table_site.Rnw')
 
@@ -52,6 +52,17 @@ names(candidate.genes) <- c('food','brain')
 
 knitr::knit2pdf('~/Projects/R_lib/epigenetics/gene_specific.Rnw')
 
+
+
+
+### lm with splines, region
+#parallelize over regions
+regr.region.pv <- foreach (r = 1:11, .verbose = TRUE) %do% {lm.spline(mval.region[[r]], reg.vars, bhv.vars)}
+
+length(regr.region.pv)
+names(regr.region.pv) <- names(mval.region)
+
+knitr::knit2pdf('~/Projects/R_lib/epigenetics/splines_table_region.Rnw')
 
 
 ### mlm site
@@ -78,12 +89,12 @@ knitr::knit2pdf('~/Projects/R_lib/epigenetics/mlm_table_site.Rnw')
 #parallelize over regions
 regr.region.pv <- foreach (r = 1:11, .verbose = TRUE) %do% {mlm.regions(mval.region[[r]], reg.vars)}
 
-length(regr.site.pv)
-names(regr.site.pv) <- y_vars
-attributes(regr.site.pv)
-
-names(regr.region.pv) <- y_vars
-length(regr.region.pv)
+# length(regr.site.pv)
+# names(regr.site.pv) <- bhv.vars
+# attributes(regr.site.pv)
+#
+# names(regr.region.pv) <- bhv.vars
+# length(regr.region.pv)
 names(regr.region.pv) <- names(mval.region)
 
 knitr::knit2pdf('~/Projects/R_lib/epigenetics/mlm_table_region.Rnw')

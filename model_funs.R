@@ -1,7 +1,8 @@
-### lm with splines, site level
-lm.cpgsite <- function(m, reg.vars, y) {
+### lm with splines, site or region level
+lm.spline <- function(m, reg.vars, y) {
   fmla<-paste('reg.vars$', y, '~reg.vars$',
-              paste(cntrl, collapse = "+reg.vars$"), "+bs(reg.vars$mval, degree = 3)", sep = "")
+              paste(cntrl, collapse = "+reg.vars$"),
+              "+bs(reg.vars$mval, degree = 3)", sep = "")
 
   n.probes = dim(m)[1]
   pval <- vector(mode = "numeric", length = n.probes)
@@ -14,11 +15,11 @@ lm.cpgsite <- function(m, reg.vars, y) {
 }
 
 
+
 ### mlm with splines, site level
 mlm.cpgsite <- function(m, reg.vars, vec) {
   fmla <- paste('cbind(',
                 paste0('reg.vars$',bhv.vars, sep=','), ')~reg.vars$',
-#               'reg.vars$CEBQ_SRSE, ', 'reg.vars$CEBQ_FR, ', 'reg.vars$CEBQ_EF, ', 'reg.vars$CEBQ_EOE) ',
                 paste(cntrl, collapse = "+reg.vars$"),
                 "+bs(reg.vars$mval, degree = 3)", sep = "")
   pval <- vector(mode = "numeric", length = dim(m)[1])
@@ -40,9 +41,10 @@ mlm.cpgsite <- function(m, reg.vars, vec) {
 
 # behav_score <- pData[y_vars]
 mlm.regions <- function(m, reg.vars) {
-  fmla <- paste('cbind(', 'reg.vars$CEBQ_SRSE, ', 'reg.vars$CEBQ_FR, ', 'reg.vars$CEBQ_EF, ',
-                'reg.vars$CEBQ_EOE) ',
-                paste(cntrl, collapse = "+reg.vars$"), "+bs(reg.vars$mval, degree = 3)", sep = "")
+  fmla <- paste('cbind(',
+                paste0('reg.vars$',bhv.vars, sep=','), ')~reg.vars$',
+                paste(cntrl, collapse = "+reg.vars$"),
+                "+bs(reg.vars$mval, degree = 3)", sep = "")
   #regress against the methylation values at each region
   #do this for each of the 11 region categories
   n.probes <- dim(m)[1]
