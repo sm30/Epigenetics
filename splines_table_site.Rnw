@@ -16,7 +16,7 @@ library(xtable)
 for (i in 1:length(bhv.vars)){
     names(regr.site.pv[[i]]) <- rownames(hm450)
     pval.sort <- sort(regr.site.pv[[i]])
-    pval.sig <- pval.sort[1:5]
+    pval.sig <- pval.sort[1:20]
     pval.annot <- hm450[names(pval.sig), c(17, 18, 20, 22)]
     assoc.genes <- data.frame(pval.sig, pval.annot)
     behav.caption <- gsub("_", "-", bhv.vars[i])
