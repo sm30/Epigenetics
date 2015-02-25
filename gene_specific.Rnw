@@ -11,16 +11,15 @@ Promoter regions were divided into two, mutually exclusive bins of 200 bp and 15
 transcription start site (designated TSS200 and TSS1500, respectively).
 
 
-<<signif_genes, dev = "pdf", results = 'asis', echo = FALSE, sanitize = TRUE, fig.show = 'hold'>>=
+<<signif_genes, dev = "pdf", results = 'asis', echo = FALSE, sanitize = TRUE, fig.show = 'asis'>>=
 library(xtable)
-
 
 for (j in 1:length(candidate.genes)) {
   for (i in 1:length(bhv.vars)){
     names(regr.site.pv[[i]]) <- rownames(hm450)
     pval.sort <- sort(regr.site.pv[[i]])
 
-    pval.annot <- hm450[names(pval.sort), c(17, 18, 20, 22)]
+    pval.annot <- hm450[names(pval.sort), c(18, 20, 22)]
     assoc.genes <- data.frame(names(pval.sort), pval.sort, pval.annot)
 
     food.genes <- NULL
@@ -29,23 +28,41 @@ for (j in 1:length(candidate.genes)) {
       food.genes <- rbind(food.genes, assoc.genes[grep(pattern,assoc.genes$UCSC_RefGene_Name),])
     }
     food.genes <- arrange(food.genes, pval.sort)
-    food.genes.sig <- unique(food.genes[1:40,])[1:20,]
+    food.genes <- unique(food.genes)
+    food.genes$qval <- qvalue(food.genes$pval.sort)$qvalues
+    food.genes <- food.genes[,c(1,2,6,3,4,5)]
 
-    uniqueGenes <- function(vec) {
-      tmp <- lapply(strsplit(vec,";"),unique)
-      unlist(lapply(tmp, paste0, collapse=";")) # cat doesn't work
-    }
+    food.genes.sig <- food.genes[1:20,]
 
     food.genes.sig$UCSC_RefGene_Name <- uniqueGenes(food.genes.sig$UCSC_RefGene_Name)
     food.genes.sig$UCSC_RefGene_Group <- uniqueGenes(food.genes.sig$UCSC_RefGene_Group)
 
-    behav.caption <- paste0("geneSet-", names(candidate.genes)[j],", ", gsub("_", "-", bhv.vars[i]))
+    behav.caption <- paste0("geneSet-", names(candidate.genes)[j],", number of CpG is ", correction,
+                            ', ', gsub("_", "-", bhv.vars[i]))
+
+    csvname <- paste0(names(candidate.genes)[j], '_', bhv.vars[i], '.csv')
+
+    write.table(food.genes.sig, file = csvname, sep = ",", col.names = NA, qmethod = "double")
 
   	print(xtable(food.genes.sig, digits = -3, caption = behav.caption),
           sanitize.text.function=function(str)gsub("_"," ",str,fixed=TRUE))
+    cat('\\clearpage\n')
+    
+    temp <- as.numeric(food.genes$pval.sort)
+    temp <- as.vector(temp)
+    pvname <- paste0('linear model w/ splines, CpG sites from ', names(candidate.genes)[j],
+                     ' genes for ', bhv.vars[i])
+    pvplot(temp, pvname)
+#     pvname <- gsub("_"," ",pvname,fixed=TRUE)
+#     print(\\ pvname)
+    cat('\\clearpage\n')
+
+    pngname <- paste0('splines_site_qqplot_', names(candidate.genes)[j],
+                     '_', bhv.vars[i], '.png')
+    dev.copy(png,file=pngname,width = 640, height = 640); dev.off()
   }
 }
-cat('\\clearpage\n')
+
 @
 \end{landscape}
 \end{document}

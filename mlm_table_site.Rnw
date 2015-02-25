@@ -13,19 +13,25 @@ transcription start site (designated TSS200 and TSS1500, respectively).
 <<signif_genes, dev = "pdf", results = 'asis', echo = FALSE, sanitize = TRUE, fig.show = 'hold'>>=
 library(xtable)
 
-yvars <- c("CEBQ_SRSE", "CEBQ_FR", "CEBQ_EF", "CEBQ_EOE")
+# yvars <- c("CEBQ_SRSE", "CEBQ_FR", "CEBQ_EF", "CEBQ_EOE")
 
 temp <- 0
 for (i in 1:4){
-	temp <- regr.site.pv[[i]] + temp
+	temp <- site.pv[[i]] + temp
 }
 
 names(temp) <- rownames(hm450)
 pval.sort <- sort(temp)
-pval.sig <- pval.sort[1:30]
-pval.annot <- hm450[names(pval.sig), c(18, 20, 22, 9, 10)]
+qval.sort <- qvalue(pval.sort)$qvalues
+pval.sort <- cbind(pval.sort, qval.sort)
+pval.sig <- pval.sort[1:30,]
+pval.annot <- hm450[rownames(pval.sig), c(18, 20, 22, 9, 10)]
 assoc.genes <- data.frame(pval.sig, pval.annot)
-behav.caption <- gsub("_", "-", yvars[i])
+
+assoc.genes$UCSC_RefGene_Name <- uniqueGenes(assoc.genes$UCSC_RefGene_Name)
+assoc.genes$UCSC_RefGene_Group <- uniqueGenes(assoc.genes$UCSC_RefGene_Group)
+
+behav.caption <- gsub("_", "-", bhv.vars[i])
 print(xtable(assoc.genes, digits = -3, caption = behav.caption),
 sanitize.text.function=function(str)gsub("_"," ",str,fixed=TRUE))
 
@@ -33,43 +39,4 @@ cat('\\clearpage\n')
 
 @
 \end{landscape}
-
-<<sig_genes_in_regions, eval=F, include=F, dev = "pdf", results = 'asis', echo = FALSE, fig.show = 'hold'>>=
-
-for (i in 1:4){
-	for (r in regions){
-		#the rownames of mval.region[[r]] are the gene names for the the first 6 regions
-		#the rownames of the remaining 5 regions correspond chromosomal locations
-		names(regr.region.pvals[[i]][[r]]) <- rownames(mval.region[[r]])
-		#sort the pvalues after assigning each the corresponding gene/chr location
-		pval.sort <- sort(regr.region.pvals[[i]][[r]])
-		#extract the 5 lowest pvalues (names of the gene/ chr loc are automatically extracted)
-		pval.sig <- pval.sort[1:5]
-
-		#find the associated Cpg ids for each signif. gene/ chr loc
-		CpG.sig <- vector(mode="list")
-		for (j in 1:5){
-		CpG.sig[[j]] <- get(r)[['SID']][[names(pval.sig)[j]]]
-		}
-		#convert the CpG id's into a vector
-		CpG.sig <- sapply(CpG.sig, paste, collapse =", ")
-		#create a data frame with the significant pvalues, and associated CpG ids
-		#the rownames of the data frame are the corresponding gene/chr location
-		assoc.genes <- data.frame(pval.sig, CpG.sig)
-
-		#output the table of the top 5 significant genes
-		#xtable requires columns of data frame be a column
-		#create the caption for each table by including the behav. measure and gene region
-		r.caption <- substr(r, 1, nchar(r)-3)
-		behav.caption <- gsub("_", "-", behav.vars[i])
-		capt <- paste(behav.caption, r.caption)
-
-		#output the table
-		tab <- xtable(assoc.genes, digits = -3, caption = capt)
-		print(tab, sanitize.text.function=function(str)gsub("_"," ",str,fixed=TRUE))
-	}
-	cat('\\clearpage\n')
-	cat('\\newpage\n')
-}
-@
 \end{document}

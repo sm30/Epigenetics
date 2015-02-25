@@ -1,12 +1,23 @@
 # bhv.vars <- c("CEBQ_SRSE", "CEBQ_FR", "CEBQ_EF", "CEBQ_EOE")
-bhv.vars <- c("CEBQ_SRSE")
+pData$BASC_HY1 <- log(10 + pData$BASC_HY)
+pData$BRF_SF1 <- log(pData$BRF_SF - 5)
+pData$BRF_WM1 <- log(pData$BRF_WM - 12)
+pData$BRF_IN1 <- log(pData$BRF_IN - 5)
+pData$BRF_EC1 <- log(pData$BRF_EC - 5)
+pData$BRF_PO1 <- log(pData$BRF_PO - 5)
 
-#pData$BASC_HY1 <- log(10 + pData$BASC_HY)
-#pData$BRF_SF1 <- log(pData$BRF_SF - 5)
-#pData$BRF_WM1 <- log(pData$BRF_WM - 12)
-#pData$BRF_IN1 <- log(pData$BRF_IN - 5)
-#pData$BRF_EC1 <- log(pData$BRF_EC - 5)
-#pData$BRF_PO1 <- log(pData$BRF_PO - 5)
+bhv.vars <- c("BASC_HY1", "BRF_SF1", "BRF_WM1", "BRF_IN1", "BRF_EC1", "BRF_PO1")
+
+pca_input <- subset(pData, select=bhv.vars)
+
+pca <- prcomp(~BASC_HY1+BRF_SF1+BRF_WM1+BRF_IN1+BRF_EC1+BRF_PO1, data=pData, scale=T)
+# pca <- prcomp(na.omit(pca_input), scale=T)
+pca_output <- predict(pca, newdata=pca_input)
+pData <- cbind(pData, pca_output)
+# summary(pca)
+# plot(pca)
+
+bhv.vars <- c("PC1", "PC2", "PC3")
 
 #create categorical variables for mother's ADHD, education, parity, and pre-pregnancy BMI
 pData$asrs_ADHD_2cat <- factor(pData$asrs_ADHD, labels = 0:1, levels = 0:1)

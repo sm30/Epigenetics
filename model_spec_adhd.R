@@ -1,12 +1,12 @@
 # bhv.vars <- c("CEBQ_SRSE", "CEBQ_FR", "CEBQ_EF", "CEBQ_EOE")
-bhv.vars <- c("CEBQ_SRSE")
+pData$BASC_HY1 <- log(10 + pData$BASC_HY)
+# pData$BRF_SF1 <- log(pData$BRF_SF - 5)
+# pData$BRF_WM1 <- log(pData$BRF_WM - 12)
+# pData$BRF_IN1 <- log(pData$BRF_IN - 5)
+# pData$BRF_EC1 <- log(pData$BRF_EC - 5)
+# pData$BRF_PO1 <- log(pData$BRF_PO - 5)
 
-#pData$BASC_HY1 <- log(10 + pData$BASC_HY)
-#pData$BRF_SF1 <- log(pData$BRF_SF - 5)
-#pData$BRF_WM1 <- log(pData$BRF_WM - 12)
-#pData$BRF_IN1 <- log(pData$BRF_IN - 5)
-#pData$BRF_EC1 <- log(pData$BRF_EC - 5)
-#pData$BRF_PO1 <- log(pData$BRF_PO - 5)
+bhv.vars <- c("BASC_EXT", "BASC_BSI", "BASC_HY1", "BASC_AP", "BRF_GEC")
 
 #create categorical variables for mother's ADHD, education, parity, and pre-pregnancy BMI
 pData$asrs_ADHD_2cat <- factor(pData$asrs_ADHD, labels = 0:1, levels = 0:1)

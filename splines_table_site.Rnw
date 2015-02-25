@@ -14,15 +14,28 @@ transcription start site (designated TSS200 and TSS1500, respectively).
 library(xtable)
 
 for (i in 1:length(bhv.vars)){
-    names(regr.site.pv[[i]]) <- rownames(hm450)
-    pval.sort <- sort(regr.site.pv[[i]])
-    pval.sig <- pval.sort[1:20]
-    pval.annot <- hm450[names(pval.sig), c(17, 18, 20, 22)]
-    assoc.genes <- data.frame(pval.sig, pval.annot)
-    behav.caption <- gsub("_", "-", bhv.vars[i])
-	print(xtable(assoc.genes, digits = -3, caption = behav.caption),
-			sanitize.text.function=function(str)gsub("_"," ",str,fixed=TRUE))
-	}
+  names(regr.site.pv[[i]]) <- rownames(hm450)
+  pval.sort <- sort(regr.site.pv[[i]])
+  
+  qval.sort <- qvalue(pval.sort)$qvalues
+
+  pval.sort <- data.frame(cbind(pval.sort, qval.sort))
+#   pval.sort$qval <- p.adjust(pval.sort$pval.sort, method='BH')
+
+  pval.sig <- pval.sort[1:20,]
+  pval.annot <- hm450[rownames(pval.sig), c(18, 20, 22)]
+  assoc.genes <- data.frame(pval.sig, pval.annot)
+
+  assoc.genes$UCSC_RefGene_Name <- uniqueGenes(assoc.genes$UCSC_RefGene_Name)
+  assoc.genes$UCSC_RefGene_Group <- uniqueGenes(assoc.genes$UCSC_RefGene_Group)
+
+  csvname <- paste0('splines_site_', bhv.vars[i], '.csv')
+  write.table(assoc.genes, file = csvname, sep = ",", col.names = NA, qmethod = "double")
+
+  behav.caption <- gsub("_", "-", bhv.vars[i])
+  print(xtable(assoc.genes, digits = -3, caption = behav.caption),
+		sanitize.text.function=function(str)gsub("_"," ",str,fixed=TRUE))
+}
 
 	cat('\\clearpage\n')
 @

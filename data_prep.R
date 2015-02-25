@@ -8,7 +8,7 @@ rm(annot)
 table(rownames(pData) == pData$nestid)
 
 #load the behavioral scores
-epi<-read.csv("nestsr_iversen_24OCT2014.csv", as.is=TRUE)
+epi<-read.csv("nestsr_iversen.csv", as.is=TRUE)
 dim(epi)
 length(unique(epi$nestid)) == nrow(epi)
 rownames(epi) <-epi$nestid
@@ -66,7 +66,7 @@ annotation = as.matrix(hm450)
 groupinfo = pData
 
 # source code from the IMA package directly adapted for the analysis
-source('~/Projects/R_lib/epigenetics/ima_custom.R')
+source('../ima_custom.R')
 
 # <<print_xmethy450, cache = TRUE, echo = TRUE, include = FALSE>>=
 #check the length of the regions

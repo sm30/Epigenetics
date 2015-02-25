@@ -14,17 +14,21 @@ transcription start site (designated TSS200 and TSS1500, respectively).
 	for (r in names(mval.region)){
 		#the rownames of mval.region[[r]] are the gene names for the the first 6 regions
 		#the rownames of the remaining 5 regions correspond chromosomal locations
-		names(regr.region.pv[[r]]) <- rownames(mval.region[[r]])
+		names(region.pv[[r]]) <- rownames(mval.region[[r]])
 		#sort the pvalues after assigning each the corresponding gene/chr location
-		pval.sort <- sort(regr.region.pv[[r]])
+		pval.sort <- sort(region.pv[[r]])
+    qval.sort <- qvalue(pval.sort)$qvalues
+    pval.sort <- cbind(pval.sort, qval.sort)
+
 		#extract the 5 lowest pvalues (names of the gene/ chr loc are automatically extracted)
-		pval.sig <- pval.sort[1:5]
+		pval.sig <- pval.sort[1:5,]
 
 		#find the associated Cpg ids for each signif. gene/ chr loc
 		CpG.sig <- vector(mode="list")
 		for (j in 1:5){
-		CpG.sig[[j]] <- get(r)[['SID']][[names(pval.sig)[j]]]
+		  CpG.sig[[j]] <- get(r)[['SID']][[rownames(pval.sig)[j]]]
 		}
+
 		#convert the CpG id's into a vector
 		CpG.sig <- sapply(CpG.sig, paste, collapse =", ")
 		#create a data frame with the significant pvalues, and associated CpG ids
