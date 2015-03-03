@@ -5,8 +5,22 @@ pData$BASC_HY1 <- log(10 + pData$BASC_HY)
 # pData$BRF_IN1 <- log(pData$BRF_IN - 5)
 # pData$BRF_EC1 <- log(pData$BRF_EC - 5)
 # pData$BRF_PO1 <- log(pData$BRF_PO - 5)
+pData$BRF_GEC1 <- log(pData$BRF_GEC - 10)
+# qqnorm(pData$BRF_GEC1); qqline(pData$BRF_GEC1, col=2)
+# qqnorm(pData$BRF_GEC); qqline(pData$BRF_GEC, col=2)
 
-bhv.vars <- c("BASC_EXT", "BASC_BSI", "BASC_HY1", "BASC_AP", "BRF_GEC")
+pData$BASC_INT1 <- log(pData$BASC_INT + 10)
+# qqnorm(pData$BASC_INT1); qqline(pData$BASC_INT1, col=2)
+# qqnorm(pData$BASC_INT); qqline(pData$BASC_INT, col=2)
+
+pData$BASC_EXT1 <- log(pData$BASC_EXT + 10)
+# qqnorm(pData$BASC_EXT1); qqline(pData$BASC_EXT1, col=2)
+# qqnorm(pData$BASC_EXT); qqline(pData$BASC_EXT, col=2)
+
+# knit2html('../transformation.Rmd')
+
+# bhv.vars <- c("BASC_EXT", "BASC_INT", "BASC_BSI", "BASC_HY1", "BASC_AP", "BRF_GEC")
+bhv.vars <- c("BASC_EXT1", "BASC_INT1", "BRF_GEC1")
 
 #create categorical variables for mother's ADHD, education, parity, and pre-pregnancy BMI
 pData$asrs_ADHD_2cat <- factor(pData$asrs_ADHD, labels = 0:1, levels = 0:1)
@@ -21,7 +35,7 @@ pData$prePregBMIthreeLev <- factor(cut(pData$BMI_LMP_kgm2, c(0, 30, 35, 100), ri
 
 cntrl <- c("age_mo_SR_Surv", "sex", "birthwt_kg",
            "GestAge_weeks", "education_3cat", "race_final_n", "parity_3cat",
-           "mom_age_delv", "prePregBMIthreeLev", 'maternal_smoking2')
+           "mom_age_delv", "BMI_LMP_kgm2", 'maternal_smoking2')
 
 yx <- c(bhv.vars, cntrl)
 names(pData)[duplicated(names(pData))] <- 'nestid_dup' # has a dup name, need to check earlier code.

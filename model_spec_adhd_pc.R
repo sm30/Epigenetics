@@ -32,7 +32,7 @@ pData$prePregBMIthreeLev <- factor(cut(pData$BMI_LMP_kgm2, c(0, 30, 35, 100), ri
 
 cntrl <- c("age_mo_SR_Surv", "sex", "birthwt_kg",
            "GestAge_weeks", "education_3cat", "race_final_n", "parity_3cat",
-           "mom_age_delv", "prePregBMIthreeLev", 'maternal_smoking2')
+           "mom_age_delv", "BMI_LMP_kgm2", 'maternal_smoking2')
 
 yx <- c(bhv.vars, cntrl)
 names(pData)[duplicated(names(pData))] <- 'nestid_dup' # has a dup name, need to check earlier code.

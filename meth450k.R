@@ -1,5 +1,5 @@
 # options(width = 60)
-paks <- c('splines', 'IMA', 'dplyr', 'xtable', 'doParallel', 'foreach', 'knitr', 'qvalue')
+paks <- c('splines', 'IMA', 'dplyr', 'xtable', 'doParallel', 'foreach', 'knitr', 'qvalue', 'gap')
 lapply(paks, library, character.only=T)
 nofcl <- 4
 
@@ -36,6 +36,12 @@ registerDoParallel(cl)
 regr.site.pv <- foreach (y = bhv.vars, .verbose = TRUE, .packages = 'splines') %dopar% {lm.spline(mvalues, reg.vars, y)}
 stopCluster(cl)
 
+# regr.site.pv.old <- regr.site.pv
+
+par(resetPar())
+opar <- par(no.readonly=TRUE)
+bhv.vars.short <- bhv.vars
+# bhv.vars.short <- c("BASC_EXT1", "BASC_INT1", "BRF_GEC1")
 knitr::knit2pdf('../splines_table_site.Rnw')
 
 
@@ -73,7 +79,12 @@ knitr::knit2pdf('../gene_specific.Rnw')
 
 ### lm with splines, region
 #parallelize over regions
-regr.region.pv <- foreach (r = 1:11, .verbose = TRUE) %do% {lm.spline(mval.region[[r]], reg.vars, bhv.vars)}
+cl <- makeCluster(nofcl)
+registerDoParallel(cl)
+regr.region.pv <-
+  foreach (r = 1:11, .verbose = TRUE) %:%
+  foreach (y = bhv.vars, .verbose = TRUE, .packages = 'splines') %dopar% {lm.spline(mval.region[[r]], reg.vars, y)}
+stopCluster(cl)
 
 length(regr.region.pv)
 names(regr.region.pv) <- names(mval.region)
