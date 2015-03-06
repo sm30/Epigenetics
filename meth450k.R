@@ -21,7 +21,6 @@ source('../data_prep.R')
 source('../model_funs.R')
 
 
-library(dplyr)
 # source('../model_spec_eating.R')
 # source('../model_spec_adhd_pc.R')
 source('../model_spec_adhd.R')
@@ -38,11 +37,14 @@ stopCluster(cl)
 
 # regr.site.pv.old <- regr.site.pv
 
-par(resetPar())
+# par(resetPar())
 opar <- par(no.readonly=TRUE)
-bhv.vars.short <- bhv.vars
-# bhv.vars.short <- c("BASC_EXT1", "BASC_INT1", "BRF_GEC1")
-knitr::knit2pdf('../splines_table_site.Rnw')
+bkppar <- opar
+# opar <- bkppar
+# bhv.vars.short <- bhv.vars
+bhv.vars.short <- c("BASC_EXT1", "BASC_INT1", "BRF_GEC1")
+knit2html('../splines_table_site.Rmd')
+# knit2pdf('../splines_table_site.Rnw')
 
 
 # top candidate genes by phenotype

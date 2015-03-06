@@ -1,0 +1,92 @@
+---
+title: "splines table site"
+author: "Victor Wang"
+date: "03/03/2015"
+output: html_document
+---
+
+### Splines Table Site
+
+```{r results = 'asis', echo = FALSE, fig.show = 'asis'}
+# library(xtable)
+# opar <- par(no.readonly=TRUE)
+dev.off(dev.list()["RStudioGD"])
+
+names(regr.site.pv) <- bhv.vars
+for (i in bhv.vars.short){
+  names(regr.site.pv[[i]]) <- rownames(hm450)
+  pval.sort <- sort(regr.site.pv[[i]])
+
+  qval.sort <- qvalue(pval.sort)$qvalues
+
+  pq.sort <- data.frame(cbind(pval.sort, qval.sort))
+#   pval.sort$qval <- p.adjust(pval.sort$pval.sort, method='BH')
+  pval.bh <- pval.sort[pq.sort$qval.sort<0.05]
+
+  pval.sig <- pq.sort[1:20,]
+  pval.annot <- hm450[rownames(pval.sig), c(18, 20, 22)]
+  assoc.genes <- data.frame(pval.sig, pval.annot)
+
+  assoc.genes$UCSC_RefGene_Name <- uniqueGenes(assoc.genes$UCSC_RefGene_Name)
+  assoc.genes$UCSC_RefGene_Group <- uniqueGenes(assoc.genes$UCSC_RefGene_Group)
+
+  csvname <- paste0('splines_site_', i, '.csv')
+  write.table(assoc.genes, file = csvname, sep = ",", col.names = NA, qmethod = "double")
+
+  behav.caption <- gsub("_", "-", i)
+#   print(xtable(assoc.genes, digits = -3, caption = behav.caption), 
+#         sanitize.text.function=function(str)gsub("_"," ",str,fixed=TRUE), type='html')
+  tab <- xtable(assoc.genes)  
+  print(tab, type='html')
+#   cat('\\clearpage\n')
+
+  par(opar)
+  temp <- as.numeric(pval.sort)
+  temp <- as.vector(temp)
+  pvname <- paste0('linear model w/ splines, CpG sites for ', i)
+  pvplot(temp, pvname)
+
+  pngname <- paste0('splines_site_qqplot_', i, '.png')
+  dev.copy(png,file=pngname,width = 640, height = 640); dev.off()
+#   cat('\\clearpage\n')
+
+  par(opar)
+  pval.annot <- hm450[, c('CHR','MAPINFO')]
+  d <- cbind(pval.annot, regr.site.pv[[i]])
+  names(d) <- c('chr', 'pos', 'p')
+
+  d$chr[d$chr=="X"] <- "23"
+  d$chr[d$chr=="Y"] <- "24"
+  d$chr <- as.numeric(d$chr)
+  data <- arrange(d, chr, pos)
+
+#   if (length(pval.bh)>5) pval.bh <- pval.bh[1:5]
+  glist <- names(pval.bh)
+  pval.annot <- hm450[glist, c('CHR','MAPINFO')]
+  hd <- data.frame(pval.annot, pval.bh)
+  names(hd) <- c('chr', 'pos', 'p')
+  hd$chr[hd$chr=="X"] <- "23"
+  hd$chr[hd$chr=="Y"] <- "24"
+  hd$chr <- as.numeric(hd$chr)
+  hd$gene <- rownames(hd)
+  hdata <- arrange(hd, chr, pos)
+  color <- rep(c("lightgray","gray"),12)
+  glen <- length(glist)
+  hcolor <- rep("red",glen)
+  par(las=2, xpd=TRUE, cex.axis=1.8, cex=0.4)
+  ops <- mht.control(colors=color,yline=1.5,xline=3)
+  hops <- hmht.control(data=hdata,colors=hcolor)
+  mhtplot(data,ops,hops,pch=19)
+
+  axis(2,cex.axis=1.5)
+  suggestiveline <- -log10(0.05/nrow(data))
+  abline(h=suggestiveline, col="blue")
+
+  pngname <- paste0('splines_site_mhtplot_', i, '.png')
+  dev.copy(png,file=pngname,width = 960, height = 640); dev.off()
+
+#   cat('\\clearpage\n')
+}
+
+par(opar)
+```
