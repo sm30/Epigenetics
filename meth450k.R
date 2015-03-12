@@ -1,5 +1,5 @@
 # options(width = 60)
-paks <- c('splines', 'IMA', 'dplyr', 'xtable', 'doParallel', 'foreach', 'knitr', 'qvalue', 'gap')
+paks <- c('splines', 'IMA', 'dplyr', 'xtable', 'doParallel', 'foreach', 'knitr', 'qvalue', 'gap', 'data', 'car')
 lapply(paks, library, character.only=T)
 nofcl <- 4
 
@@ -46,6 +46,8 @@ bhv.vars.short <- c("BASC_EXT1", "BASC_INT1", "BRF_GEC1")
 knit2html('../splines_table_site.Rmd')
 # knit2pdf('../splines_table_site.Rnw')
 
+knit2html('../splines_table_site_check.Rmd')
+#
 
 # top candidate genes by phenotype
 food <- c('AGRP','BRS3','CARTPT','CCKAR','CCKBR','FYN','GALR2','GALR3','GCG','GHRL',

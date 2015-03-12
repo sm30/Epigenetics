@@ -6,6 +6,7 @@ output: html_document
 ---
 
 ### Splines Table Site
+`r date()`
 
 ```{r results = 'asis', echo = FALSE, fig.show = 'asis'}
 # library(xtable)
@@ -17,6 +18,7 @@ for (i in bhv.vars.short){
   names(regr.site.pv[[i]]) <- rownames(hm450)
   pval.sort <- sort(regr.site.pv[[i]])
 
+  # top hits table
   qval.sort <- qvalue(pval.sort)$qvalues
 
   pq.sort <- data.frame(cbind(pval.sort, qval.sort))
@@ -40,6 +42,7 @@ for (i in bhv.vars.short){
   print(tab, type='html')
 #   cat('\\clearpage\n')
 
+  # pvplot
   par(opar)
   temp <- as.numeric(pval.sort)
   temp <- as.vector(temp)
@@ -50,6 +53,7 @@ for (i in bhv.vars.short){
   dev.copy(png,file=pngname,width = 640, height = 640); dev.off()
 #   cat('\\clearpage\n')
 
+  # mhtplot
   par(opar)
   pval.annot <- hm450[, c('CHR','MAPINFO')]
   d <- cbind(pval.annot, regr.site.pv[[i]])
