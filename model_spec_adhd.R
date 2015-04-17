@@ -1,4 +1,7 @@
 # bhv.vars <- c("CEBQ_SRSE", "CEBQ_FR", "CEBQ_EF", "CEBQ_EOE")
+
+# pData <- mutate(pData, BASC_APHY=BASC_AP+BASC_HY)
+
 pData$BASC_HY1 <- log(10 + pData$BASC_HY)
 # pData$BRF_SF1 <- log(pData$BRF_SF - 5)
 # pData$BRF_WM1 <- log(pData$BRF_WM - 12)
@@ -9,7 +12,7 @@ pData$BRF_GEC1 <- log(pData$BRF_GEC + 5)
 # qqnorm(pData$BRF_GEC1); qqline(pData$BRF_GEC1, col=2)
 # qqnorm(pData$BRF_GEC); qqline(pData$BRF_GEC, col=2)
 
-pData$BASC_INT1 <- log(pData$BASC_INT - 2)
+pData$BASC_INT1 <- log(pData$BASC_INT + 0)
 # qqnorm(pData$BASC_INT1); qqline(pData$BASC_INT1, col=2)
 # qqnorm(pData$BASC_INT); qqline(pData$BASC_INT, col=2)
 

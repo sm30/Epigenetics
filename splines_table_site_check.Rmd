@@ -16,7 +16,7 @@ dev.off(dev.list()["RStudioGD"])
 
 names(regr.site.pv) <- bhv.vars
 
-# influentialObs <- NULL
+influentialObs <- NULL
 
 for (i in bhv.vars.short){
   names(regr.site.pv[[i]]) <- rownames(hm450)
@@ -57,8 +57,8 @@ for (i in bhv.vars.short){
     cutoff <- 4/((length(lm.out$residuals)-length(lm.out$coefficients)-1))
     d <- cooks.distance(lm.out)
     nameofd <- names(d)[d>cutoff]
-    # obs <- cbind(names(d[d>cutoff]), d[d>cutoff], i, cpg, cutoff)
-    # influentialObs <- rbind(influentialObs, obs)
+    obs <- data.frame(names(d[d>cutoff]), i, d[d>cutoff], cutoff)
+    influentialObs <- rbind(influentialObs, obs)
     plot(lm.out, which=4, cook.levels=cutoff)
     abline(h=cutoff)
     influencePlot(lm.out, id.method="identify", main="Influence plot", 
@@ -71,10 +71,19 @@ for (i in bhv.vars.short){
     text(mvals, reg.vars2[,i], row.names(reg.vars2), cex=0.6, pos=4, col="red")
   }
 }
-# 
-# outliers <- unique(influentialObs[,c(1, 3)])
-# tab <- xtable(outliers)
-# print(tab, type='html')
+
+influ <- data.frame(influentialObs)
+names(influ) <- c("id", "phenotype", "cd", "cutoff")
+influ <- mutate(influ, cd_ratio = cd/cutoff)
+influ <- select(influ, -cd, -cutoff)
+outliers <- sqldf("select phenotype, id, max(cd_ratio) as max_cd_ratio from influ group by phenotype, id")
+outliers_count <- sqldf("select phenotype, id, count(id) as Count from influ group by phenotype, id")
+# outliers <- sqldf("select outliers_max.phenotype, id, max_cd_ratio")
+outliers <- cbind(outliers, Count=outliers_count$Count)
+outliers <- sqldf("select * from outliers where Count>10 or (max_cd_ratio>2 and Count>5)")
+
+tab <- xtable(influentialObs)
+print(tab, type='html')
 # 
 # digits(influentialObs)[c(2,5)] <- 2
 # # round(influentialObs, digits=2)

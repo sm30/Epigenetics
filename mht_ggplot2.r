@@ -61,7 +61,7 @@ library(ggplot2)
 # the sample data here: http://de.iplantcollaborative.org/dl/d/DDEE604B-D690-41A9-86E1-25138CDC1D9E/gwas.zip
 # 1. Set Working Directory and load ggplot2
 
-setwd('~/Projects/R_lib/epigenetics/gwas_examples')
+setwd('~/Dropbox/Projects/epigenetics/gwas_examples')
 # 2. Import p-values from previous analysis
 
 pVals <- read.csv('ricePvals.csv', row.names=1)

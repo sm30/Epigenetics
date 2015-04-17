@@ -15,6 +15,24 @@ lm.spline <- function(m, reg.vars, y) {
 }
 
 
+### robust lm with splines, site or region level
+lmRob.spline <- function(m, reg_vars_g, y) {
+  assign('reg_vars_g', reg_vars_g, envir=.GlobalEnv) # problem with S4 with GlobalEnv
+  fmla<-paste('reg_vars_g$', y, '~reg_vars_g$',
+              paste(cntrl, collapse = "+reg_vars_g$"),
+              "+bs(reg_vars_g$mval, degree = 3)", sep = "")
+
+  n.probes = dim(m)[1]
+  pval <- vector(mode = "numeric", length = n.probes)
+  for (i in 1:n.probes) {
+    reg_vars_g$mval <- m[i,]
+    lm.out <- lmRob(as.formula(fmla), data = reg_vars_g)
+    pval[i] <- anova(lm.out)["bs(reg_vars_g$mval, degree = 3)", "Pr(F)"]
+  }
+  remove(reg_vars_g, envir=.GlobalEnv)
+  return(pval)
+}
+
 
 ### mlm with splines, site level
 mlm.cpgsite <- function(m, reg.vars, vec) {

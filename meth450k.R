@@ -1,11 +1,12 @@
 # options(width = 60)
-paks <- c('splines', 'IMA', 'dplyr', 'xtable', 'doParallel', 'foreach', 'knitr', 'qvalue', 'gap', 'data', 'car')
+paks <- c('splines', 'IMA', 'dplyr', 'xtable', 'doParallel', 'foreach', 'knitr', 'qvalue', 'gap', 'data',
+          'car', 'robust')
 lapply(paks, library, character.only=T)
-nofcl <- 4
+nofcl <- 3
 
 #load the mvalues, pvalue, and hm450 matrix
 #hm450 is the complete annotation matrix
-setwd('~/Projects/R_lib/epigenetics/data')
+setwd('~/Dropbox/Projects/epigenetics/data')
 
 # subset mvalues and hm450 to size 5k
 #load("MvalueAnalysisStructures.RData")
@@ -13,12 +14,16 @@ setwd('~/Projects/R_lib/epigenetics/data')
 #hm450<-hm450[1:5000,]
 #save.image("MvalueAnalysisStructures_5000.RData")
 
-# load("~/epi450k/MvalueAnalysisStructures_5000.RData")
-load("~/epi450k/MvalueAnalysisStructures.RData")
-# load("/proj/design/il450k/nest13/R/MvalueAnalysisStructures.RData")
+# # load("~/epi450k/MvalueAnalysisStructures_5000.RData")
+# load("~/epi450k/MvalueAnalysisStructures.RData")
+# # load("/proj/design/il450k/nest13/R/MvalueAnalysisStructures.RData")
+#
+# source('../data_prep.R')
+# source('../model_funs.R')
+#
+# save.image('~/epi450k/ready_to_analyze.RData')
 
-source('../data_prep.R')
-source('../model_funs.R')
+load('~/epi450k/ready_to_analyze.RData')
 
 
 # source('../model_spec_eating.R')
@@ -28,11 +33,11 @@ source('../model_spec_adhd.R')
 
 ### lm with splines, site
 #initialize the column we will use to store the methylation value one site at a time
-pData$mval <- NA
+# pData$mval <- NA
 
 cl <- makeCluster(nofcl)
 registerDoParallel(cl)
-regr.site.pv <- foreach (y = bhv.vars, .verbose = TRUE, .packages = 'splines') %dopar% {lm.spline(mvalues, reg.vars, y)}
+regr.site.pv <- foreach (y = bhv.vars, .verbose = TRUE, .packages = c('splines','robust')) %dopar% {lmRob.spline(mvalues, reg.vars, y)}
 stopCluster(cl)
 
 # regr.site.pv.old <- regr.site.pv
