@@ -2,7 +2,9 @@
 
 # pData <- mutate(pData, BASC_APHY=BASC_AP+BASC_HY)
 
-pData$BASC_HY1 <- log(10 + pData$BASC_HY)
+pData$BASC_APHY1 <- log(pData$BASC_APHY + 0)
+
+pData$BASC_HY1 <- log(pData$BASC_HY + 5)
 # pData$BRF_SF1 <- log(pData$BRF_SF - 5)
 # pData$BRF_WM1 <- log(pData$BRF_WM - 12)
 # pData$BRF_IN1 <- log(pData$BRF_IN - 5)
@@ -16,14 +18,15 @@ pData$BASC_INT1 <- log(pData$BASC_INT + 0)
 # qqnorm(pData$BASC_INT1); qqline(pData$BASC_INT1, col=2)
 # qqnorm(pData$BASC_INT); qqline(pData$BASC_INT, col=2)
 
-pData$BASC_EXT1 <- log(pData$BASC_EXT + 25)
+pData$BASC_EXT1 <- log(pData$BASC_EXT + 10)
 # qqnorm(pData$BASC_EXT1); qqline(pData$BASC_EXT1, col=2)
 # qqnorm(pData$BASC_EXT); qqline(pData$BASC_EXT, col=2)
 
 # knit2html('../transformation.Rmd')
 
 # bhv.vars <- c("BASC_EXT", "BASC_INT", "BASC_BSI", "BASC_HY1", "BASC_AP", "BRF_GEC")
-bhv.vars <- c("BASC_EXT1", "BASC_INT1", "BRF_GEC1")
+# bhv.vars <- c("BASC_EXT1", "BASC_INT", "BRF_GEC1")
+bhv.vars <- c("BASC_APHY")
 
 #create categorical variables for mother's ADHD, education, parity, and pre-pregnancy BMI
 pData$asrs_ADHD_2cat <- factor(pData$asrs_ADHD, labels = 0:1, levels = 0:1)

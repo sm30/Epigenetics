@@ -8,10 +8,10 @@ output: html_document
 ### Splines Table Site
 `r date()`
 
-```{r results = 'asis', echo = FALSE, fig.show = 'asis'}
+```{r results = 'asis', echo = FALSE, fig.show = 'asis', warnings=FALSE, messages=FALSE}
 # library(xtable)
 # opar <- par(no.readonly=TRUE)
-dev.off(dev.list()["RStudioGD"])
+# dev.off(dev.list()["RStudioGD"])
 
 names(regr.site.pv) <- bhv.vars
 for (i in bhv.vars.short){

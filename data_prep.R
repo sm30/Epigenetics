@@ -8,7 +8,7 @@ rm(annot)
 table(rownames(pData) == pData$nestid)
 
 #load the behavioral scores
-epi<-read.csv("nestsr_iversen.csv", as.is=TRUE)
+epi<-read.csv("nestsr_iversen_2.csv", as.is=TRUE)
 dim(epi)
 length(unique(epi$nestid)) == nrow(epi)
 rownames(epi) <-epi$nestid

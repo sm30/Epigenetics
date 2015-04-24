@@ -1,19 +1,15 @@
-\documentclass[a4paper]{article}
-\usepackage{pdflscape}
-\usepackage{graphicx}
-\usepackage[margin = 1 cm]{geometry}
-
-\begin{document}
-\begin{landscape}
+---
+title: "gene specific"
+author: "Victor Wang"
+date: "April 24, 2015"
+output: html_document
+---
 
 Illumina characterizes probes into 6 categories: TSS1500, TSS200, 5' UTR, 1st exon, gene body, and 3' UTR.
 Promoter regions were divided into two, mutually exclusive bins of 200 bp and 1500 bp blocks upstream of the
 transcription start site (designated TSS200 and TSS1500, respectively).
 
-
-<<signif_genes, dev = "pdf", results = 'asis', echo = FALSE, sanitize = TRUE, fig.show = 'asis'>>=
-library(xtable)
-
+```{r signif_genes, results = 'asis', echo = FALSE, sanitize = TRUE, fig.show = 'asis'}
 for (j in 1:length(candidate.genes)) {
   for (i in 1:length(bhv.vars)){
     names(regr.site.pv[[i]]) <- rownames(hm450)
@@ -46,8 +42,8 @@ for (j in 1:length(candidate.genes)) {
     write.table(food.genes.sig, file = csvname, sep = ",", col.names = NA, qmethod = "double")
 
   	print(xtable(food.genes.sig, digits = -3, caption = behav.caption),
-          sanitize.text.function=function(str)gsub("_"," ",str,fixed=TRUE))
-    cat('\\clearpage\n')
+          sanitize.text.function=function(str)gsub("_"," ",str,fixed=TRUE), 
+  	      type='html')
 
     temp <- as.numeric(food.genes$pval.sort)
     temp <- as.vector(temp)
@@ -56,14 +52,10 @@ for (j in 1:length(candidate.genes)) {
     pvplot(temp, pvname)
 #     pvname <- gsub("_"," ",pvname,fixed=TRUE)
 #     print(\\ pvname)
-    cat('\\clearpage\n')
 
     pngname <- paste0('splines_site_qqplot_', names(candidate.genes)[j],
                      '_', bhv.vars[i], '.png')
     dev.copy(png,file=pngname,width = 640, height = 640); dev.off()
   }
 }
-
-@
-\end{landscape}
-\end{document}
+```

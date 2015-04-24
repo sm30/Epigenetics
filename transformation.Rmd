@@ -4,10 +4,18 @@ author: "Victor Wang"
 date: "03/03/2015"
 output: html_document
 ---
+BRF_GEC
+```{r echo = T, sanitize = TRUE, fig.show = 'asis'}
+pData$BASC_HY1 <- log(pData$BASC_HY + 5)
+hist(pData$BASC_HY, 30)
+qqnorm(pData$BASC_HY); qqline(pData$BASC_HY, col=2)
+hist(pData$BASC_HY1, 30)
+qqnorm(pData$BASC_HY1); qqline(pData$BASC_HY1, col=2)
+```
 
 BRF_GEC
 ```{r echo = T, sanitize = TRUE, fig.show = 'asis'}
-pData$BRF_GEC1 <- log(pData$BRF_GEC - 30)
+pData$BRF_GEC1 <- log(pData$BRF_GEC + 10)
 hist(pData$BRF_GEC, 30)
 qqnorm(pData$BRF_GEC); qqline(pData$BRF_GEC, col=2)
 hist(pData$BRF_GEC1, 30)
@@ -16,7 +24,7 @@ qqnorm(pData$BRF_GEC1); qqline(pData$BRF_GEC1, col=2)
 
 BASC_INT
 ```{r echo = T, sanitize = TRUE, fig.show = 'asis'}
-pData$BASC_INT1 <- log(pData$BASC_INT + 5)
+pData$BASC_INT1 <- log(pData$BASC_INT + 0)
 hist(pData$BASC_INT, 30)
 qqnorm(pData$BASC_INT); qqline(pData$BASC_INT, col=2)
 hist(pData$BASC_INT1, 30)
@@ -25,7 +33,7 @@ qqnorm(pData$BASC_INT1); qqline(pData$BASC_INT1, col=2)
 
 BASC_EXT
 ```{r echo = T, sanitize = TRUE, fig.show = 'asis'}
-pData$BASC_EXT1 <- log(pData$BASC_EXT + 5)
+pData$BASC_EXT1 <- log(pData$BASC_EXT + 25)
 hist(pData$BASC_EXT, 30)
 qqnorm(pData$BASC_EXT); qqline(pData$BASC_EXT, col=2)
 hist(pData$BASC_EXT1, 30)

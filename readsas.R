@@ -2,7 +2,7 @@
 library(sas7bdat)
 library(dplyr)
 library(knitr)
-
+library(readxl)
 setwd("~/Dropbox/Projects/epigenetics/data")
 
 # alles <- read.sas7bdat('nest_merge_tb_rc.sas7bdat')
@@ -13,10 +13,25 @@ alles_names <- names(alles)
 alles_names[grep('_mean$', alles_names)]
 
 
-sr <- read.sas7bdat('nestsr_iversen.sas7bdat')
+sr <- read.csv("nestsr_iversen.csv", as.is=TRUE)
+# sr <- read_excel("nestsr_iversen.xlsx")
 sr_names <- names(sr)
 sr$age_yr_SR_Surv <- floor(sr$age_mo_SR_Surv / 12)
-srs <- sr[sr$in_450k == 1,]
+# srs <- sr[sr$in_450k == 1,] # includes na and mess things up. don't know why!
+srs <- filter(sr, in_450k == 1)
+srs <- filter(srs, !(nestid == 532 & is.na(es0_age)))
+srs_bkp <- srs
+
+# newdata <- na.omit(srs[,grep('^nestid$|^es0_pa_basc|^es0_pa_brief|es0_age', sr_names)])
+# newdata <- na.omit(srs[,grep('^nestid$|^es0_pa_basc|es0_age', sr_names)])
+# newdata <- na.omit(srs[,grep('^nestid$|^es0_pa_brief|es0_age', sr_names)])
+# newdata <- unique(srs[,grep('^es0_pa_basc', sr_names)])
+# newdata <- unique(srs[,grep('^es0_pa_brief', sr_names)])
+
+# apply(srs[,grep('^es0_pa_basc', sr_names)], 2, function(x) sum(!is.na(x)))
+# apply(srs[,grep('^es0_pa_brief', sr_names)], 2, function(x) sum(!is.na(x)))
+# newdata <- mutate(newdata, update = 1)
+# newdata <- merge(srs, newdata, by = 'nestid')
 
 names(srs) <- gsub("_brief_", "_brf_", names(srs))
 BRF_names <- sr_names[grep('^BRF_', sr_names)]
@@ -26,18 +41,32 @@ for (x in c(BRF_names, BASC_names)) {
   y <- paste0('es0_pa_', tolower(x))
   print(y)
   srs[,x_old] <- srs[,x]
-  srs[!is.na(srs$es0_age > srs$age_yr_SR_Surv) & !is.na(srs[, y]), x] <-
-    srs[!is.na(srs$es0_age > srs$age_yr_SR_Surv) & !is.na(srs[, y]), y]
+  # srs <- srs %>% mutate(x = ifelse(!is.na(es0_pa_basc_hy) & !is.na(es0_pa_brf_sf), y, x))
+  f <- paste0("srs <- srs %>% mutate(", x, " = ifelse(!is.na(es0_pa_basc_hy) & !is.na(es0_pa_brf_sf), ", y, ", ", x, "))")
+  print(f)
+  eval(parse(text=f))
+
+#   srs[!is.na(srs$es0_age > srs$age_yr_SR_Surv) & !is.na(srs[, y]), x] <-
+#     srs[!is.na(srs$es0_age > srs$age_yr_SR_Surv) & !is.na(srs[, y]), y]
   remove(y)
 }
+
+srs <- srs %>% mutate(age_mo_SR_Surv = ifelse(!is.na(es0_pa_basc_hy) & !is.na(es0_pa_brf_sf), es0_wasi_age, age_mo_SR_Surv))
 
 # test it worked
 for (x in c(BRF_names, BASC_names)) {
   x_old <- paste0(x, '_OLD')
   y <- paste0('es0_pa_', tolower(x))
-  print(cbind(srs[!is.na(srs$es0_age > srs$age_yr_SR_Surv) & !is.na(srs[, y]), x],
-    srs[!is.na(srs$es0_age > srs$age_yr_SR_Surv) & !is.na(srs[, y]), x_old]))
+  print(cbind(srs[!is.na(srs[, y]), x],
+              srs[!is.na(srs[, y]), x_old]))
+#   print(cbind(srs[!is.na(srs$es0_age > srs$age_yr_SR_Surv) & !is.na(srs[, y]), x],
+#     srs[!is.na(srs$es0_age > srs$age_yr_SR_Surv) & !is.na(srs[, y]), x_old]))
 }
+
+summary(srs_bkp[, grep('BASC', names(sr))])
+summary(srs[, grep('BASC', names(sr))])
+
+write.csv(srs, file = 'nestsr_iversen_2.csv')
 
 for (x in c(BRF_names, BASC_names)) {
   x_old <- paste0(x, '_OLD')
