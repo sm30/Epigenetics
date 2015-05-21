@@ -38,7 +38,7 @@ for (i in bhv.vars.short){
   behav.caption <- gsub("_", "-", i)
 #   print(xtable(assoc.genes, digits = -3, caption = behav.caption), 
 #         sanitize.text.function=function(str)gsub("_"," ",str,fixed=TRUE), type='html')
-  tab <- xtable(assoc.genes)  
+  tab <- xtable(assoc.genes, display = c("s", "E", "E", "s", "s", "s"))  
   print(tab, type='html')
 #   cat('\\clearpage\n')
 
@@ -47,10 +47,10 @@ for (i in bhv.vars.short){
   temp <- as.numeric(pval.sort)
   temp <- as.vector(temp)
   pvname <- paste0('linear model w/ splines, CpG sites for ', i)
-  pvplot(temp, pvname)
+  print(pvplot(temp, pvname))
 
-  pngname <- paste0('splines_site_qqplot_', i, '.png')
-  dev.copy(png,file=pngname,width = 640, height = 640); dev.off()
+  # pngname <- paste0('splines_site_qqplot_', i, '.png')
+  # dev.copy(png,file=pngname,width = 640, height = 640); dev.off()
 #   cat('\\clearpage\n')
 
   # mhtplot

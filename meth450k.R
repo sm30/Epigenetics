@@ -14,21 +14,21 @@ setwd('~/Dropbox/Projects/epigenetics/data')
 #hm450<-hm450[1:5000,]
 #save.image("MvalueAnalysisStructures_5000.RData")
 
-# # load("~/epi450k/MvalueAnalysisStructures_5000.RData")
+# load("~/epi450k/MvalueAnalysisStructures_5000.RData")
 # load("~/epi450k/MvalueAnalysisStructures.RData")
 # # load("/proj/design/il450k/nest13/R/MvalueAnalysisStructures.RData")
 #
 # source('../data_prep.R')
-# source('../model_funs.R')
+source('../model_funs.R')
 #
 # save.image('~/epi450k/ready_to_analyze.RData')
 
 load('~/epi450k/ready_to_analyze.RData')
 
 
-# source('../model_spec_eating.R')
+source('../model_spec_eating.R')
 # source('../model_spec_adhd_pc.R')
-source('../model_spec_adhd.R')
+# source('../model_spec_adhd.R')
 
 
 ### lm with splines, site
@@ -37,7 +37,8 @@ source('../model_spec_adhd.R')
 
 cl <- makeCluster(nofcl)
 registerDoParallel(cl)
-regr.site.pv <- foreach (y = bhv.vars, .verbose = TRUE, .packages = c('splines','robust')) %dopar% {lm.spline(mvalues, reg.vars, y)}
+regr.site.pv <- foreach (y = bhv.vars, .verbose = TRUE, .packages = c('splines')) %dopar% {lm.spline(mvalues, reg.vars, y)}
+# regr.site.pv <- foreach (y = bhv.vars, .verbose = TRUE, .packages = c('splines','robust')) %dopar% {lmRob.spline(mvalues, reg.vars, y)}
 stopCluster(cl)
 
 # regr.site.pv.old <- regr.site.pv
@@ -48,7 +49,7 @@ bkppar <- opar
 # opar <- bkppar
 # bhv.vars.short <- bhv.vars
 # bhv.vars.short <- c("BASC_EXT1", "BASC_INT", "BRF_GEC1")
-bhv.vars.short <- c("BASC_APHY")
+bhv.vars.short <- c("CEBQ_SRSE")
 # rmarkdown::render('../splines_table_site.Rmd', "html_document")
 knit2html('../splines_table_site.Rmd')
 # knit2pdf('../splines_table_site.Rnw')
@@ -65,9 +66,13 @@ candidate.genes <- list(adhd)
 names(candidate.genes) <- c('adhd')
 candidate.genes <- list(brain)
 names(candidate.genes) <- c('brain')
+candidate.genes <- list(SRSE)
+names(candidate.genes) <- c('SRSE')
 
 
 knitr::knit2html('../gene_specific.Rmd')
+knitr::knit2html('../geneset_specific.Rmd')
+knitr::knit2html('../gene_specific_corr.Rmd')
 # knitr::knit2pdf('../pvplot_gene_specific.Rnw')
 
 

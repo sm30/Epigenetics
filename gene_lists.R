@@ -60,3 +60,5 @@ slotkin_genes <- strsplit(slotkin_genes, " ")
 slotkin_genes <- lapply(slotkin_genes, function(x) x[[1]])
 slotkin_genes <- unlist(slotkin_genes)
 slotkin_genes <- toupper(slotkin_genes)
+
+SRSE <- c('BHLHB9', 'SLC39A8')

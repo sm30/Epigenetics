@@ -1,0 +1,31 @@
+---
+title: "gene specific corr"
+author: "Victor Wang"
+date: "April 24, 2015"
+output: html_document
+---
+
+Illumina characterizes probes into 6 categories: TSS1500, TSS200, 5' UTR, 1st exon, gene body, and 3' UTR.
+Promoter regions were divided into two, mutually exclusive bins of 200 bp and 1500 bp blocks upstream of the
+transcription start site (designated TSS200 and TSS1500, respectively).
+
+```{r signif_genes, results = 'asis', echo = FALSE, sanitize = TRUE, fig.show = 'asis'}
+mVal <- NULL
+for (gene in candidate.genes[[1]]) {
+  print(gene)
+  pattern <- paste0(";", gene, ";|^", gene, ";|;", gene, "$")
+  mVal <- mvalues[grep(pattern,hm450$UCSC_RefGene_Name),]
+  ordered <- sort(regr.site.pv[[1]][rownames(mVal)])
+  order <- names(ordered)
+  p_val <- c(NA, ordered)
+  names(p_val)[1] <- bhv.vars
+  mVal <- subset(t(mVal), select = order)
+  mVal <- cbind(subset(reg.vars, select = bhv.vars), mVal)
+  cor_mVal <- cor(mVal, use = 'complete.obs')
+  cor_mVal <- cbind(p_val, cor_mVal)
+  filename <- paste0(gene, "_cor.csv")
+  write.csv(cor_mVal, file=filename)
+  # print(cor(mVal))
+}
+# plot(mVal)
+```
